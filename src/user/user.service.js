@@ -2,22 +2,16 @@ import pkg from "jsonwebtoken";
 const { sign } = pkg;
 const { verify } = pkg;
 import userModel from "../user/user.model.js";
+// get one not get one user and change return email and first name last name on one user
 class userService {
-  static async getOneUser(id, authHeader) {
+  static async getOne(authHeader) {
     const payload = await this.verifyUser(authHeader);
-    if (!payload) {
-      throw new Error("token not valid");
-    }
 
-    const user = await userModel.findOne({ _id: id });
+    const user = await userModel.findOne({ _id: payload._id });
     return { user: { firstName: user.firstName, id: user.id } };
   }
-  static async getAllUsers(authHeader) {
+  static async getAll(authHeader) {
     const payload = await this.verifyUser(authHeader);
-
-    if (!payload) {
-      throw new Error("token not valid");
-    }
 
     const users = await userModel.find({});
     let totalusers = [];
@@ -38,9 +32,12 @@ class userService {
     return userModel.deleteOne({ _id: userId });
   }
 
-  static async verifyUser(authHeader) {
+  static async verify(authHeader) {
     const token = authHeader.split(" ")[1];
     const payload = verify(token, "mysecretkey");
+    if (!payload) {
+      throw new Error("token not valid");
+    }
     return payload;
   }
 }

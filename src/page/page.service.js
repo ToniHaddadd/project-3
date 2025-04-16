@@ -3,39 +3,27 @@ import userService from "../user/user.service.js";
 import pageModel from "./page.model.js";
 
 class pageService {
-  static async createAPage(pageName, authHeader) {
-    const payload = await userService.verifyUser(authHeader);
-    if (!payload) {
-      throw new Error("token not valid");
-    }
+  static async createOne(pageName, authHeader) {
+    const payload = await userService.verify(authHeader);
 
     if (await this.findPageByName(pageName)) {
       throw new Error("page ALREADY EXISTS");
     }
 
     const userId = payload._id;
-    new pageModel({ userId, pageName }).save();
-    const user = await userService.getOneUser(userId, authHeader);
+    const page = await new pageModel({ userId, pageName }).save();
 
-    return user;
-  }
-  static async getAPage(_id, authHeader) {
-    const payload = await userService.verifyUser(authHeader);
-    if (!payload) {
-      throw new Error("token not valid");
-    }
-    const page = await this.findPageById(_id);
-    if (!page) {
-      throw new Error("page not found");
-    }
     return page;
   }
-  static async getAllPages(userId, authHeader) {
-    const payload = await userService.verifyUser(authHeader);
+  static async getOne(_id, authHeader) {
+    const payload = await userService.verify(authHeader);
 
-    if (!payload) {
-      throw new Error("token not valid");
-    }
+    const page = pageModel.findOne({ _id: _id, userId: payload._id });
+
+    return page;
+  }
+  static async getAll(userId, authHeader) {
+    const payload = await userService.verify(authHeader);
 
     const pages = await pageModel.find({ userId: userId });
 
@@ -43,13 +31,9 @@ class pageService {
   }
 
   static async deleteOne(pageId, authHeader) {
-    const payload = await userService.verifyUser(authHeader);
+    const payload = await userService.verify(authHeader);
 
-    if (!payload) {
-      throw new Error("token not valid");
-    }
-
-    return pageModel.deleteOne({ _id: pageId });
+    return pageModel.deleteOne({ _id: pageId, userId: payload._id });
   }
 
   static async findPageByName(pageName) {

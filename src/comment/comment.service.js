@@ -6,17 +6,15 @@ import pageService from "../page/page.service.js";
 
 class commentService {
   static async createAComment(postId, content, authHeader) {
-    const payload = await userService.verifyUser(authHeader);
-    if (!payload) {
-      throw new Error("token not valid");
-    }
+    const payload = await userService.verify(authHeader);
+
     const commentContent = await this.findCommentByContent(content);
     if (commentContent) {
       throw new Error("comment already been used");
     }
     const userId = payload._id;
 
-    new commentModel({ postId, content }).save();
+    new commentModel({ postId, userId, content }).save();
     const user = await userService.getOneUser(userId, authHeader);
 
     return user;
@@ -26,10 +24,8 @@ class commentService {
     return commentModel.findOne({ content: content });
   }
   static async getAComment(_id, authHeader) {
-    const payload = await userService.verifyUser(authHeader);
-    if (!payload) {
-      throw new Error("token not valid");
-    }
+    const payload = await userService.verify(authHeader);
+
     const Comment = await this.findCommentById(_id);
     if (!Comment) {
       throw new Error("comment not found");
@@ -40,35 +36,24 @@ class commentService {
     return commentModel.findOne({ _id: _id });
   }
   static async getAllComments(postId, authHeader) {
-    const payload = await userService.verifyUser(authHeader);
-
-    if (!payload) {
-      throw new Error("token not valid");
-    }
+    const payload = await userService.verify(authHeader);
 
     const comments = await commentModel.find({ postId: postId });
 
     return comments;
   }
   static async deleteAComment(_id, authHeader) {
-    const payload = await userService.verifyUser(authHeader);
-    if (!payload) {
-      throw new Error("token not valid");
-    }
+    const payload = await userService.verify(authHeader);
+
     const Comment = await this.findCommentById(_id);
     if (!Comment) {
       throw new Error("comment not found");
     }
-    const post = await postService.findPostById(Comment.postId);
-    const num = post.pageId;
-
-    const page = await pageService.findPageById(num);
-    const userId = page.userId;
 
     if (!(payload._id == userId)) {
       throw new Error("not the creator of the comment");
     }
-    return commentModel.deleteOne({ _id: _id });
+    return commentModel.deleteOne({ _id: _id, userId: payload._id });
   }
 }
 export default commentService;

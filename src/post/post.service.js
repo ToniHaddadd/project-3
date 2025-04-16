@@ -3,11 +3,8 @@ import userService from "../user/user.service.js";
 import postModel from "./post.model.js";
 import pageService from "../page/page.service.js";
 class postService {
-  static async createAPost(pageId, postName, content, authHeader) {
-    const payload = await userService.verifyUser(authHeader);
-    if (!payload) {
-      throw new Error("token not valid");
-    }
+  static async createOne(pageId, postName, content, authHeader) {
+    const payload = await userService.verify(authHeader);
 
     if (await this.findPostByName(postName)) {
       throw new Error("post ALREADY EXISTS");
@@ -24,7 +21,7 @@ class postService {
 
     const userId = payload._id;
     new postModel({ pageId, postName, content }).save();
-    const user = await userService.getOneUser(userId, authHeader);
+    const user = await userService.getOne(userId, authHeader);
 
     return user;
   }
@@ -32,23 +29,17 @@ class postService {
     return postModel.findOne({ postName: postName });
   }
 
-  static async getAPost(_id, authHeader) {
-    const payload = await userService.verifyUser(authHeader);
-    if (!payload) {
-      throw new Error("token not valid");
-    }
+  static async getOne(_id, authHeader) {
+    const payload = await userService.verify(authHeader);
+
     const post = await this.findPostById(_id);
     if (!post) {
       throw new Error("post not found");
     }
     return post;
   }
-  static async getAllPosts(pageId, authHeader) {
-    const payload = await userService.verifyUser(authHeader);
-
-    if (!payload) {
-      throw new Error("token not valid");
-    }
+  static async getAll(pageId, authHeader) {
+    const payload = await userService.verify(authHeader);
 
     const posts = await postModel.find({ pageId: pageId });
 

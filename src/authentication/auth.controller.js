@@ -12,7 +12,7 @@ class authController {
         lastName
       );
       res
-        .status(200)
+        .status(201) //201 is the signed up good res created
         .json({ message: "user sign up and added successfully" + firstName });
     } catch (error) {
       res.status(400).json({ message: error.message });

@@ -3,8 +3,8 @@ import postController from "./post.controller.js";
 
 const router = express.Router();
 
-router.post("/createPost", postController.createAPost);
-router.get("/all", postController.getAllPosts);
-router.get("/:id", postController.getAPost);
+router.post("/createPost", postController.createOne);
+router.get("/all", postController.getAll);
+router.get("/:id", postController.getOne);
 
 export default router;

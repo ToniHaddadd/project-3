@@ -3,10 +3,11 @@ import pageController from "./page.controller.js";
 
 const router = express.Router();
 
-router.post("/createPage", pageController.createAPage);
-router.get("/all", pageController.getAllPages);
-router.get("/:id", pageController.getAPage);
+router.post("/createPage", pageController.createOne);
+router.get("/all", pageController.getAll);
+router.get("/:id", pageController.getOne);
+// router.get("/One/:id", pageController.getAPage);
 
-router.delete("/:id", pageController.deleteAPage);
+router.delete("/:id", pageController.deleteOne);
 
 export default router;

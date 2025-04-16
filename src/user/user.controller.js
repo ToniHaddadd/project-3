@@ -1,27 +1,26 @@
 import userService from "./user.service.js";
 class userController {
-  static async getOneUser(req, res) {
+  static async getOne(req, res) {
     try {
       const authHeader = req.headers["authorization"];
-      const Id = req.body._id;
 
-      const user = await userService.getOneUser(Id, authHeader);
+      const user = await userService.getOne(authHeader);
       res.status(200).json({ message: "User fetched successfully", user });
     } catch (error) {
       res.status(400).json({ message: error.message });
     }
   }
-  static async getAllUsers(req, res) {
+  static async getAll(req, res) {
     try {
       const authHeader = req.headers["authorization"];
 
-      const users = await userService.getAllUsers(authHeader);
+      const users = await userService.getAll(authHeader);
       res.status(200).json({ message: "Users fetched successfully", users });
     } catch (error) {
       res.status(400).json({ message: error.message });
     }
   }
-  static async deleteAUser(req, res) {
+  static async deleteOne(req, res) {
     try {
       const userId = req.body._id;
 

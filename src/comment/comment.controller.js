@@ -2,15 +2,16 @@ import commentService from "./comment.service.js";
 class commentController {
   static async createAComment(req, res) {
     try {
-      const { postId, content } = req.body;
+      const { postId, userId, content } = req.body;
 
       const authHeader = req.headers["authorization"];
       const user = await commentService.createAComment(
         postId,
+        userId,
         content,
         authHeader
       );
-      res.status(200).json({
+      res.status(201).json({
         message: "comment created and added successfully by: ",
         user,
       });

@@ -2,8 +2,8 @@ import express from "express";
 import userControler from "./user.controller.js";
 
 const router = express.Router();
-router.get("/ALL", userControler.getAllUsers);
-router.get("/:id", userControler.getOneUser);
-router.delete("/:id", userControler.deleteAUser);
+router.get("/ALL", userControler.getAll);
+router.get("/:id", userControler.getOne);
+router.delete("/:id", userControler.deleteOne);
 
 export default router;
