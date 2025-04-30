@@ -1,4 +1,8 @@
 import pkg from "jsonwebtoken";
+import bcryptjs from "bcryptjs";
+import dotenv from "dotenv";
+dotenv.config();
+const { hash, compare } = bcryptjs;
 const { sign } = pkg;
 const { verify } = pkg;
 import userModel from "../user/user.model.js";
@@ -8,17 +12,19 @@ class authService {
     if (await this.findUserByEmail(email)) {
       throw new Error("USER ALREADY EXISTS");
     }
-    new userModel({ email, password, firstName, lastName }).save();
+    const hashedPass = await hash(password, 12);
+    new userModel({ email, password: hashedPass, firstName, lastName }).save();
   }
 
   static signJwt(userpayload) {
-    return sign(userpayload, "mysecretkey", { expiresIn: "1d" });
+    return sign(userpayload, process.env.JWT_SECRET, { expiresIn: "1d" });
   }
 
   static async login(email, password) {
     const userFinder = await this.findUserByEmail(email);
+    const passChecker = await compare(password, userFinder.password);
 
-    if (userFinder.password != password) {
+    if (!passChecker) {
       throw new Error("PASS or email incorrect");
     }
 

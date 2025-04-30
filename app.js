@@ -1,3 +1,6 @@
+import "dotenv/config.js";
+import dotenv from "dotenv";
+dotenv.config();
 import express from "express";
 import bodyParser from "body-parser";
 
@@ -20,7 +23,7 @@ app.use("/users", userRoute);
 app.use("/page", pageRoute);
 app.use("/post", postRoute);
 app.use("/comment", commentRoute);
-
-app.listen(3000, () => {
+const port = process.env.PORT;
+app.listen(port, () => {
   console.log("we are open on port 3000");
 });
